@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container-fluid d-flex justify-content-center mt-5">
+    <form method="post" class="w-25">
+        <label for="api_key" class="p-2">Api Key</label>
+        <input class="form-control" placeholder="API Key" name="api_key" value={{api_key}} id="api_key" required>
+        <label for="api_secret" class="p-2">Api Secret</label>
+        <input class="form-control" placeholder="API Secret" name="api_secret" id="api_secret" value={{api_secret}}
+               required>
+        <label for="response_language" class="p-2">Выбор языка</label>
+
+        <select class="form-select" name="response_language" id="response_language" required>
+            <option {% if response_language=='en' %} selected="selected" {% endif %} value="en">EN</option>
+            <option {% if response_language=='ru' %} selected="selected" {% endif %} value="ru">RU</option>
+        </select>
+        <label for="response_language" class="p-2">Количество записей</label>
+
+        <input class="form-control" placeholder="Количество записей" name="max_notes" value={{max_notes}}
+               type="number" min="1" max="20" required>
+
+        <div class="col text-center">
+            <button type="submit" class="btn btn-primary mt-3 ">Проверить</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

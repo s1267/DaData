@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="text-center mt-3" id="send_request_text" style="display:none;">
+    <span >Some ssss</span>
+</div>
+<div class="container-fluid d-flex justify-content-center mt-5">
+    <div class="row g-3 align-items-center">
+        <div class="col-auto">
+            <input class="form-control" placeholder="Введите адрес" name="address" id="address">
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary" id="submit_btn">Проверить</button>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt-5" style="width:90%;">
+    <p style="margin:0 auto;text-align:center;">Точность координат : 0 — точные координаты; 1 — ближайший дом; 2 —
+        улица; 3 — населенный пункт; 4 — город; 5 — координаты не определены</p>
+    <table class="table mt-5" id="address_table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Полный адрес</th>
+            <th scope="col">Индекс</th>
+            <th scope="col">Широта</th>
+            <th scope="col">Долгота</th>
+            <th scope="col" width="10%">Точность координат</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if addresses|length > 0 %}
+        {% for address in addresses %}
+        <tr scope="row">
+
+            <td>{{loop.index}}</td>
+            <td>{{address['value']}}</td>
+            <td>{{address['data']['postal_code']}}</td>
+            <td>{{address['data']['geo_lat']}}</td>
+            <td>{{address['data']['geo_lon']}}</td>
+            <td>{{address['data']['qc_geo']}}</td>
+            <td>loop.index}}</td>
+
+        </tr>
+        {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.slim.js"
+        integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+
+    function field_table(data){
+        console.log(data);
+        for (var i=0; i < data.length; i++) {
+            console.log(data[i]);
+          $('#address_table').append(`<tr scope="row"><td>${i+1}</td><td>${data[i].value}</td>
+            <td>${data[i].data.postal_code}</td>
+            <td>${data[i].data.geo_lat}</td>
+            <td>${data[i].data.geo_lon}</td>
+            <td>${data[i].data.qc_geo}</td></tr>`)
+        }
+    }
+
+    function send_request(){
+        console.log({"address":$("#address")[0].value})
+        $.ajax({
+                url: '/',
+                method: 'post',
+                data: {address: $("#address")[0].value},
+                success: function(data){
+                    console.log(data);
+                    console.log(data.status);
+                    console.log(data.status == 'error');
+                    if (data.status == 'error'){
+                        $("#send_request_text").text(data.message);
+                        setTimeout(()=>{$( "#send_request_text" ).hide()}, 10 * 1000);
+
+                    }else{
+                        field_table(data.suggestions);
+                        $("#send_request_text").text(`Успешно !!!`);
+                        setTimeout(()=>{$( "#send_request_text" ).hide()}, 10 * 1000);
+                    }
+                }
+            });
+    }
+
+    $(document).ready(function() {
+        $("#submit_btn").click(function(){
+            if ($("#address_table tbody").lenght > 0){
+                $("#address_table tbody")[0].remove();
+            }
+            $("#send_request_text").show();
+            send_request();
+            $("#address").val("");
+        });
+    });
+
+
+
+
+</script>
+{% endblock %}
